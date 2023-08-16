@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import Notification from './components/Notification'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -41,7 +42,7 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setErrorMessage('Wrong credentials')
+      setErrorMessage('wrong username or password')
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -62,19 +63,24 @@ const App = () => {
     setNewUrl(event.target.value)
   }
 
-  const addBlog = () => {
+  const addBlog = (event) => {
+    event.preventDefault()
     const blog = {
       title: title,
       author: author,
       url: url,
     }
-    console.log(blog)
     blogService.create(blog).then()
+    setErrorMessage(`a new blog ${title} by ${author} added`)
+    setTimeout(() => {
+      setErrorMessage(null)
+    }, 5000)
   }
 
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <h1>log in to application</h1>
+      <Notification message={errorMessage} error={true} />
       <div>
         username
         <input
@@ -99,6 +105,7 @@ const App = () => {
   const blogList = () => (
     <div>
       <h2>blogs</h2>
+      <Notification message={errorMessage} error={false} />
       <p>
         {user.name} logged in
         <button onClick={handleLogout}>logout</button>
