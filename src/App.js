@@ -12,11 +12,14 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [count, setCount] = useState(0)
   const blogFormRef = useRef()
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
-  }, [])
+    blogService
+      .getAll()
+      .then((blogs) => setBlogs(blogs.sort((a, b) => b.likes - a.likes)))
+  }, [count])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -64,11 +67,24 @@ const App = () => {
     setTimeout(() => {
       setErrorMessage(null)
     }, 5000)
+    setCount(count + 1)
     blogFormRef.current.toggleVisibility()
   }
 
+  const updateBlog = (blogObject) => {
+    blogService.update(blogObject.id, blogObject).then(() => {
+      setCount(count + 1)
+    })
+  }
+
+  const removeBlog = (id) => {
+    blogService.remove(id).then(() => {
+      setCount(count - 1)
+    })
+  }
+
   const blogForm = () => (
-    <Togglable buttonLabel="new blog" ref={blogFormRef}>
+    <Togglable buttonLabel="new blog" cancelLabel="cancel" ref={blogFormRef}>
       <NewBlog createBlog={addBlog} />
     </Togglable>
   )
@@ -107,7 +123,13 @@ const App = () => {
       </p>
       {blogForm()}
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog
+          key={blog.id}
+          blog={blog}
+          updateBlog={updateBlog}
+          deleteBlog={removeBlog}
+          user={user.username}
+        />
       ))}
     </div>
   )
