@@ -24,6 +24,8 @@ const NewBlog = ({ createBlog }) => {
       <p>
         title:
         <input
+          placeholder="title"
+          id="blog-title"
           value={title}
           onChange={(event) => setNewTitle(event.target.value)}
         />
@@ -31,6 +33,7 @@ const NewBlog = ({ createBlog }) => {
       <p>
         author:
         <input
+          placeholder="author"
           value={author}
           onChange={(event) => setNewAuthor(event.target.value)}
         />
@@ -38,6 +41,7 @@ const NewBlog = ({ createBlog }) => {
       <p>
         url:
         <input
+          placeholder="url"
           value={url}
           onChange={(event) => setNewUrl(event.target.value)}
         />
