@@ -7,6 +7,12 @@ describe('Blog app', function () {
       password: 'nfpw123',
     }
     cy.request('POST', `${Cypress.env('BACKEND')}/users`, user)
+    const user2 = {
+      name: 'Stranger',
+      username: 'str1',
+      password: 'str123',
+    }
+    cy.request('POST', `${Cypress.env('BACKEND')}/users`, user2)
     cy.visit('')
   })
 
@@ -49,7 +55,7 @@ describe('Blog app', function () {
       cy.get('#blog-url').type('www.blog.com')
       cy.get('#blog-add').click()
 
-      cy.contains('A new blog')
+      cy.contains('A new blog blogger')
     })
 
     describe('and a blog exists', function () {
@@ -62,18 +68,46 @@ describe('Blog app', function () {
       })
 
       it('user can like a blog', function () {
-        cy.contains('another blog cypress').parent().contains('view').click()
+        cy.contains('view').click()
         cy.contains('likes 0')
-        cy.contains('another blog cypress').parent().contains('like').click()
+        cy.contains('like').click()
         cy.contains('likes 1')
       })
 
       it('user who created the blog can delete it', function () {
-        cy.contains('another blog cypress').parent().contains('view').click()
-        cy.contains('another blog cypress').parent().contains('remove').click()
+        cy.contains('another blog cypress').contains('view').click()
+        cy.contains('another blog cypress').contains('remove').click()
 
         cy.get('html').should('not.contain', 'another blog cypress')
       })
+    })
+  })
+
+  describe('When there are multiple users', function () {
+    this.beforeEach(function () {
+      cy.login({ username: 'str1', password: 'str123' })
+      cy.createBlog({
+        title: 'blog by other user',
+        author: 'notme',
+        url: 'www.blog.com',
+      })
+      cy.contains('logout').click()
+      cy.login({ username: 'nf123', password: 'nfpw123' })
+      cy.createBlog({
+        title: 'another blog cypress',
+        author: 'me',
+        url: 'www.blog.com',
+      })
+    })
+
+    it('user cannot see remove button on other users blog', function () {
+      cy.contains('blog by other user').contains('view').click()
+      cy.should('not.contain', 'remove')
+    })
+
+    it('user can see remove button on their blogs', function () {
+      cy.contains('another blog cypress').contains('view').click()
+      cy.contains('remove')
     })
   })
 })
