@@ -81,6 +81,35 @@ describe('Blog app', function () {
         cy.get('html').should('not.contain', 'another blog cypress')
       })
     })
+
+    describe('when multiple blogs exist', function () {
+      beforeEach(function () {
+        cy.createBlog({
+          title: 'blog2',
+          author: 'me',
+          url: 'www.blog.com',
+          likes: 2,
+        })
+        cy.createBlog({
+          title: 'blog3',
+          author: 'me',
+          url: 'www.blog.com',
+          likes: 3,
+        })
+        cy.createBlog({
+          title: 'blog1',
+          author: 'me',
+          url: 'www.blog.com',
+          likes: 1,
+        })
+      })
+
+      it('blogs are sorted by likes', function () {
+        cy.get('.blog').eq(0).should('contain', 'blog3')
+        cy.get('.blog').eq(1).should('contain', 'blog2')
+        cy.get('.blog').eq(2).should('contain', 'blog1')
+      })
+    })
   })
 
   describe('When there are multiple users', function () {
