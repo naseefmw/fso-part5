@@ -1,13 +1,13 @@
 describe('Blog app', function () {
   beforeEach(function () {
-    cy.request('POST', 'http://localhost:3003/api/testing/reset')
+    cy.request('POST', `${Cypress.env('BACKEND')}/testing/reset`)
     const user = {
       name: 'Naseef',
       username: 'nf123',
       password: 'nfpw123',
     }
-    cy.request('POST', 'http://localhost:3003/api/users/', user)
-    cy.visit('http://localhost:3000')
+    cy.request('POST', `${Cypress.env('BACKEND')}/users`, user)
+    cy.visit('')
   })
 
   it('Login form is shown', function () {
@@ -50,6 +50,23 @@ describe('Blog app', function () {
       cy.get('#blog-add').click()
 
       cy.contains('A new blog')
+    })
+
+    describe('and a blog exists', function () {
+      beforeEach(function () {
+        cy.createBlog({
+          title: 'another blog cypress',
+          author: 'me',
+          url: 'www.blog.com',
+        })
+      })
+
+      it('user can like a blog', function () {
+        cy.contains('another blog cypress').parent().contains('view').click()
+        cy.contains('likes 0')
+        cy.contains('another blog cypress').parent().contains('like').click()
+        cy.contains('likes 1')
+      })
     })
   })
 })
