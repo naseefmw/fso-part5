@@ -36,4 +36,20 @@ describe('Blog app', function () {
       cy.get('html').should('not.contain', 'Naseef logged in')
     })
   })
+
+  describe('When logged in', function () {
+    beforeEach(function () {
+      cy.login({ username: 'nf123', password: 'nfpw123' })
+    })
+
+    it('A blog can be created', function () {
+      cy.contains('new blog').click()
+      cy.get('#blog-title').type('A new blog')
+      cy.get('#blog-author').type('blogger')
+      cy.get('#blog-url').type('www.blog.com')
+      cy.get('#blog-add').click()
+
+      cy.contains('A new blog')
+    })
+  })
 })
