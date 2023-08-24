@@ -67,6 +67,13 @@ describe('Blog app', function () {
         cy.contains('another blog cypress').parent().contains('like').click()
         cy.contains('likes 1')
       })
+
+      it('user who created the blog can delete it', function () {
+        cy.contains('another blog cypress').parent().contains('view').click()
+        cy.contains('another blog cypress').parent().contains('remove').click()
+
+        cy.get('html').should('not.contain', 'another blog cypress')
+      })
     })
   })
 })
